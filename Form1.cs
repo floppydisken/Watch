@@ -10,85 +10,128 @@ using System.Windows.Forms;
 
 namespace Watch1._2
 {
+    abstract class Timer
+    {
+        protected const int MillisInSecond = 100;
+        protected const int SecondsInMinute = 60;
+        protected const int MinutesInHour = 60;
+
+        // Setters should be encapsulated more as to prevent f. ex. seconds to be set to 123412341234
+        // Doesnt matter for now. Just keep it in mind.
+        public int Hours { get; set; } = 0;
+        public int Minutes { get; set; } = 0;
+        public int Seconds { get; set; } = 0;
+        public int Millis { get; set; } = 0;
+
+        /// This method assumes a tick every millis.
+        /// Also this method needs to be implemented by inhereting classes.
+        /// This concept is called Polymorphism https://en.wikipedia.org/wiki/Polymorphism_(computer_science)
+        public abstract void Tick();
+
+        public void Reset()
+        {
+            Millis = 0;
+            Seconds = 0;
+            Minutes = 0;
+            Hours = 0;
+        }
+    }
+
+    class CountUpTimer : Timer
+    {
+
+        public override void Tick()
+        {
+            Millis++;
+
+            if (Millis >= MillisInSecond)
+            {
+                Seconds++;
+                Millis = 0;
+            }
+            if (Seconds >= SecondsInMinute)
+            {
+                Minutes++;
+                Seconds = 0;
+            }
+            if (Minutes >= MinutesInHour)
+            {
+                Hours++;
+                Minutes = 0;
+            }
+        }
+    }
+
+    class CountDownTimer : Timer
+    {
+        public override void Tick()
+        {
+            Millis--;
+
+            if (Millis >= 0)
+            {
+                Seconds--;
+                Millis = MillisInSecond;
+            }
+            if (Seconds <= 0)
+            {
+                Minutes--;
+                Seconds = SecondsInMinute;
+            }
+            if (Minutes <= 0)
+            {
+                Hours--;
+                Minutes = MinutesInHour;
+            }
+        }
+    }
+
     public partial class Form1 : Form
     {
-        //Variabler for Stopuret
-        int timeH, timeM, timeS, timeMi;
-        //Variabler for Counteren/Nedtælleren
-        int counterH, counterM, counterS, counterMS;
-        //Bool for stopur
-        bool isActive;
-        //Bool for Counter/Nedtælleren
-        bool counterActive;
+        Timer countUpTimer = new CountUpTimer();
+        Timer countDownTimer = new CountDownTimer();
 
-        //Funktion til at restarte timerne på stopuret
-        private void ResetTime()
+        bool countUpTimerIsActive;
+        bool countDownTimerIsActive;
+
+        public Form1()
         {
-            timeH = 0;
-            timeM = 0;
-            timeS = 0;
-            timeMi = 0;
+            InitializeComponent();
         }
-        //Funktion til at restarte timerne på Counteren/Nedtælleren
-        private void CounterReset()
+
+        private void ResetCountUpTimer()
         {
-            counterH = 0;
-            counterM = 0;
-            counterS = 0;
-            counterMS = 0;
+            countUpTimer.Reset();
         }
-        //Stopurets funktion
+
+        private void ResetCountDownTimer()
+        {
+            countDownTimer.Reset();
+        }
+
         private void TimerStopwatch_Tick(object sender, EventArgs e)
         {
-            //Checker om den er aktiv, hvis den er, gå ind i If...
-            if (isActive)
-            {
-                //Læg oven i timeMi
-                timeMi++;
+            if (countUpTimerIsActive)
+                countUpTimer.Tick();
 
-                //Hvis timeMI er 100 gå ind i if....
-                if(timeMi >= 100)
-                {
-                    //Læg oven i timeS og reset timeMI
-                    timeS++;
-                    timeMi = 0;
-
-                    //hvis timeS er 60 gå ind i if....
-                    if(timeS >= 60)
-                    {
-                        //Læg oven i timeM og reset timeS
-                        timeM++;
-                        timeS = 0;
-
-                        //hvis timeM er 60 gå ind i if...
-                        if(timeM >= 60)
-                        {
-                            //Læg oven i timeH og reset timeM
-                            timeH++;
-                            timeM = 0;
-                        }
-                    }
-                }
-            }
-            //Funktion til at vælge format af uret
             DrawTime();
         }
-        //Stopurets startknap
+
         private void StartBtn_Click(object sender, EventArgs e)
         {
-            isActive = true;
+            countUpTimerIsActive = true;
         }
-        //Stopurets stopknap
+
         private void StopBtn_Click(object sender, EventArgs e)
         {
-            isActive = false;
+            countUpTimerIsActive = false;
         }
-        //Stopurets resetknap
+
         private void ResetBtn_Click(object sender, EventArgs e)
         {
-            isActive = false;
+            countUpTimerIsActive = false;
             //Funktion til at restarte timerne på stopuret
-            ResetTime();
+            ResetCountUpTimer();
         }
         //Sætter det "Reel" ur til nuværene tid og dato.
         private void TimerWatch_Tick(object sender, EventArgs e)
@@ -99,134 +142,97 @@ namespace Watch1._2
             LblDate.Text = DateTime.Now.ToString("MMM dd yyyy");
             LblDay.Text = DateTime.Now.ToString("dddd");
         }
-        //Counteren/Nedtællerens funktion
+
         private void CounterTimer_Tick(object sender, EventArgs e)
         {
             //Checker om den er aktiv, hvis den er, gå ind i if...
-            if (counterActive)
+            if (countDownTimerIsActive)
             {
-                //Trækker fra counterMS og tæller ned
-                counterMS--;
-                //Hvis counterMS er 0, gå ind i if....
-                if (counterMS <= 0)
-                {
-                    //Trækker fra counterS og resetter counterMS til 100
-                    counterS--;
-                    counterMS = 100;
-
-                    //Hvis counterS rammer 0 gå ind i if....
-                    if (counterS <= 0)
-                    {
-                        //Trækker fra counterM og resetter counterS til 60
-                        counterM--;
-                        counterS = 60;
-
-                        //Hvis counterM er 0 gå ind i if....
-                        if (counterM <= 0)
-                        {
-                            //Trækker fra counterH og resetter counterM til 59
-                            counterH--;
-                            counterM = 59;
-
-                            //Hvis counterH er 0 gå ind i if....
-                            if (counterH <= 0)
-                            {
-                                //Sætter counterH til 1 by default
-                                counterH = 1;
-                            }
-                        }
-                    }
-                }
+                countDownTimer.Tick();
             }
-            //Funktion til at resette Counteren/Nedtælleren
-            CountTimer();
+            DrawCountTimer();
         }
 
         //Counteren/Nedtællerens startknap
         private void TimerStart_Click(object sender, EventArgs e)
         {
-            counterActive = true;
+            countDownTimerIsActive = true;
         }
 
         //Lægger 1 til counterH
         private void AddH_Click(object sender, EventArgs e)
         {
-            counterH++;
+            countDownTimer.Hours++;
         }
 
         //Trækker 1 fra counterH
         private void MinusH_Click(object sender, EventArgs e)
         {
-            counterH--;
+            countDownTimer.Minutes--;
         }
 
         //Lægger 1 til counterM
         private void AddM_Click(object sender, EventArgs e)
         {
-            counterM++;
+            countDownTimer.Minutes++;
         }
 
         //Trækker 1 fra counterM
         private void MinusM_Click(object sender, EventArgs e)
         {
-            counterM--;
+            countDownTimer.Minutes--;
         }
 
         //Lægger 1 til counterS
         private void AddS_Click(object sender, EventArgs e)
         {
-            counterS++;
+            countDownTimer.Seconds++;
         }
 
         //Trækker 1 fra counterS
         private void MinusS_Click(object sender, EventArgs e)
         {
-            counterS--;
+            countDownTimer.Seconds--;
         }
 
         //Counteren/Nedtællerens stopknap
         private void TimerStop_Click(object sender, EventArgs e)
         {
-            counterActive = false;
+            countDownTimerIsActive = false;
         }
 
         //Counteren/Nedtællerens resetknap
         private void TimerReset_Click(object sender, EventArgs e)
         {
-            counterActive = false;
-            CounterReset();
+            countDownTimerIsActive = false;
+            ResetCountDownTimer();
         }
 
         //Sætter stopurets decimaler og format
         private void DrawTime()
         {
-            TimerMi.Text = String.Format("{0:00}", timeMi);
-            TimerS.Text = String.Format("{0:00}", timeS);
-            TimerM.Text = String.Format("{0:00}", timeM);
-            TimerH.Text = String.Format("{0:00}", timeH);
+            TimerMi.Text = String.Format("{0:00}", countUpTimer.Millis);
+            TimerS.Text = String.Format("{0:00}", countUpTimer.Seconds);
+            TimerM.Text = String.Format("{0:00}", countUpTimer.Minutes);
+            TimerH.Text = String.Format("{0:00}", countUpTimer.Hours);
         }
 
         //Sætter counteren/nedtællerens decimaler og format
-        private void CountTimer()
+        private void DrawCountTimer()
         {
-            CounterMS.Text = String.Format("{0:00}", counterMS);
-            CounterS.Text = String.Format("{0:00}", counterS);
-            CounterM.Text = String.Format("{0:00}", counterM);
-            CounterH.Text = String.Format("{0:00}", counterH);
+            CounterMS.Text = String.Format("{0:00}", countDownTimer.Millis);
+            CounterS.Text = String.Format("{0:00}", countDownTimer.Seconds);
+            CounterM.Text = String.Format("{0:00}", countDownTimer.Minutes);
+            CounterH.Text = String.Format("{0:00}", countDownTimer.Hours);
         }
 
         //Selve Formen
         private void Form1_Load(object sender, EventArgs e)
         {
             //ResetTime();
-            
+
             //isActive = false;
         }
 
-        public Form1()
-
-        {
-            InitializeComponent();
-        }
     }
 }
