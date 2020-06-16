@@ -1,0 +1,9 @@
+C:\Users\MadsV\source\repos\Watch1.2\Watch1.2\obj\Debug\Watch1.2.csprojAssemblyReference.cache
+C:\Users\MadsV\source\repos\Watch1.2\Watch1.2\obj\Debug\Watch1._2.Form1.resources
+C:\Users\MadsV\source\repos\Watch1.2\Watch1.2\obj\Debug\Watch1._2.Properties.Resources.resources
+C:\Users\MadsV\source\repos\Watch1.2\Watch1.2\obj\Debug\Watch1.2.csproj.GenerateResource.cache
+C:\Users\MadsV\source\repos\Watch1.2\Watch1.2\bin\Debug\Watch1.2.exe.config
+C:\Users\MadsV\source\repos\Watch1.2\Watch1.2\bin\Debug\Watch1.2.exe
+C:\Users\MadsV\source\repos\Watch1.2\Watch1.2\bin\Debug\Watch1.2.pdb
+C:\Users\MadsV\source\repos\Watch1.2\Watch1.2\obj\Debug\Watch1.2.exe
+C:\Users\MadsV\source\repos\Watch1.2\Watch1.2\obj\Debug\Watch1.2.pdb
